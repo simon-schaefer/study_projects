@@ -1,0 +1,47 @@
+\relax 
+\@writefile{toc}{\contentsline {section}{\numberline {1}Problem}{1}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Conventions}{1}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Approach}{1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Overview}{1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Pipeline - Flowchart}}{2}}
+\newlabel{fig:process}{{1}{2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}\textit  {Note}}{2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Why not Feature Matching only ?}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Matching Only Approach (green = ground truth, red = matching only estimate)}}{2}}
+\newlabel{fig:matching_only}{{2}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Bootstrap Initialization}{2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Baseline}{3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Patch size}{3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}Matching Lambda}{3}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Feature matching - Effect of $\lambda $ (left: $\lambda = 10$, right: $\lambda = 5$). Worse initial transformation in case of larger $\lambda $ (parking dataset).}}{3}}
+\newlabel{fig:matching_lambda}{{3}{3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.4}Fundamental Matrix Estimation - RANSAC Trials}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Continuous Operation}{3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}KLT}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces KLT - Effect of bidirectional error (left: $be = 100$, right: $be = \infty $). More inaccurate motion estimates (blue line) in case of smaller allowed bidirectional error (parking dataset).}}{4}}
+\newlabel{fig:klt_error}{{4}{4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}P3P}{4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.3}Candidate Selection}{4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.4}Candidate Search}{5}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.5}Post-Processing}{5}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.6}Re-Initialization}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Groundtruth Alignment}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Visualization}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Pipeline - Visualization}}{6}}
+\newlabel{fig:visualisation}{{5}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}KITTI}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces KITTI dataset - Resulting trajectory vs Groundtruth}}{6}}
+\newlabel{fig:results_kitti}{{6}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Malaga}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Malaga dataset - Resulting trajectory vs Groundtruth}}{7}}
+\newlabel{fig:results_malaga}{{7}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Parking}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Parking dataset - Resulting trajectory vs Groundtruth}}{7}}
+\newlabel{fig:results_parking}{{8}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}ETH}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces ETH long dataset - Resulting trajectory vs Groundtruth}}{7}}
+\newlabel{fig:results_eth_long}{{9}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces ETH april dataset - Resulting trajectory vs Groundtruth}}{8}}
+\newlabel{fig:results_eth_april}{{10}{8}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Further Development}{8}}

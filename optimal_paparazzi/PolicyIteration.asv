@@ -1,0 +1,76 @@
+function [ J_opt, u_opt_ind ] = PolicyIteration( P, G )
+%POLICYITERATION Value iteration
+%   Solve a stochastic shortest path problem by Policy Iteration.
+%
+%   [J_opt, u_opt_ind] = PolicyIteration(P, G) computes the optimal cost and
+%   the optimal control input for each state of the state space.
+%
+%   Input arguments:
+%
+%       P:
+%           A (K x K x L)-matrix containing the transition probabilities
+%           between all states in the state space for all control inputs.
+%           The entry P(i, j, l) represents the transition probability
+%           from state i to state j if control input l is applied.
+%
+%       G:
+%           A (K x L)-matrix containing the stage costs of all states in
+%           the state space for all control inputs. The entry G(i, l)
+%           represents the cost if we are in state i and apply control
+%           input l.
+%
+%   Output arguments:
+%
+%       J_opt:
+%       	A (K x 1)-matrix containing the optimal cost-to-go for each
+%       	element of the state space.
+%
+%       u_opt_ind:
+%       	A (K x 1)-matrix containing the index of the optimal control
+%       	input for each element of the state space.
+
+% put your code here
+K = size(G,1); 
+L = size(G,2); 
+
+% Initialize u_opt_ind_loop with an admissible policy.
+u_opt_ind_loop = zeros(K,1);
+for i=1:K   % Iterate over all accessible states.
+    u_valid = Inf;
+    for j=1:5
+        if(not(G(i,j)==Inf))
+            u_valid = j;
+            break;
+        end
+    end
+    u_opt_ind_loop(i,1) = u_valid;
+end
+
+% Compute the corresponding Cost2Go Vector
+J_mu_0 = policyEvaluation(P, G, u_opt_ind_loop);
+
+% Define numerical tolerance.
+tol = 1;
+
+% Do PI, until cost2go is changing less than tol.
+end
+
+
+% Computes the corresponding cost2go vector satisfying the B.E from Theorem
+% 5.1, given a admissible policy mu_h.
+function J_mu_h = policyEvaluation(P, G, mu_h)
+    % Iterative approach from equation (5.2) from Theorem (5.1):
+%     V_vec_curr = zeros(K,1);
+%     V_vec_next = ones(K,1); % ones() such that it doesn't terminate in first iterartion.
+%     while (max(abs(V_vec_curr-V_vec_next))>10^-5)
+%     end   
+
+    % Least Squares approach to solve underlying linear systems of
+    % equations. -> Bring eq. 5.1 into form A*x = b and solve for x.
+    % J_mu_h = q_tilde_vec + P_tilde*J_mu_h => (I - P_tilde)*J_mu_h = q_tilde_vec
+    P_tilde = [];
+    for i=1:K
+        P_tilde(i,:) = P(i)
+    
+    J_mu_h = V_vec_curr;
+end

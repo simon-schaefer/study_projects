@@ -1,0 +1,81 @@
+---
+title: "Map_Prediction_Graphs"
+output: pdf
+---
+
+# Weights optimisation process
+
+```{r optimisation, warning=FALSE, message=FALSE}
+library(data.table)
+library(dplyr)
+
+data <- read.csv("../predictions/astar_log.csv")
+
+plot(data$velocity, data$accuracy, col="blue", 
+     xlab="Weight of velocity-time-estimate", ylab="Error (RMPSE)")
+title("AStar Optimisation Process")
+```
+
+# Trajectory Length Prediction
+
+```{r accuracy astar , warning=FALSE, message=FALSE}
+library(data.table)
+library(dplyr)
+
+#data <- read.csv("../predictions/train_short.csv")
+
+data['TRAJ_LENGTH_EUC'] <- sqrt((data$X_START - data$X_END)^2 
+                              + (data$Y_START - data$Y_END)^2)
+
+rmpse_prediction <- sqrt(mean(((data$TRAJ_OPTIMAL - data$TRAJ_LENGTH)/data$TRAJ_LENGTH)^2))
+rmpse_euclidean  <- sqrt(mean(((data$TRAJ_LENGTH_EUC - data$TRAJ_LENGTH)/data$TRAJ_LENGTH)^2))
+
+traj_prediction_frame <- data.table(data %>% group_by(TRAJ_LENGTH) %>% 
+                                    summarise_at(vars(TRAJ_OPTIMAL), funs(median(.))))
+frame.short <- traj_prediction_frame[which(traj_prediction_frame$TRAJ_LENGTH < 400), ]
+rmpse_prediction_short <- sqrt(mean(((frame.short$TRAJ_OPTIMAL - frame.short$TRAJ_LENGTH)/frame.short$TRAJ_LENGTH)^2))
+
+```
+
+```{r trajectory length astar, warning=FALSE, message=FALSE}
+library(data.table)
+library(dplyr)
+
+data <- read.csv("../predictions/train_short.csv")
+
+data['TRAJ_LENGTH_EUC'] <- sqrt((data$X_START - data$X_END)^2 
+                              + (data$Y_START - data$Y_END)^2)
+
+traj_prediction_frame <- data.table(data %>% group_by(TRAJ_LENGTH) %>% 
+                                    summarise_at(vars(TRAJ_OPTIMAL), funs(median(.))))
+traj_euclidean_frame  <- data.table(data %>% group_by(TRAJ_LENGTH) %>% 
+                                    summarise_at(vars(TRAJ_LENGTH_EUC), funs(median(.))))
+
+plot(traj_prediction_frame$TRAJ_LENGTH, traj_prediction_frame$TRAJ_OPTIMAL, col="blue", 
+     xlab="Truth [m]", ylab="Prediction [m]")
+points(traj_euclidean_frame$TRAJ_LENGTH, traj_euclidean_frame$TRAJ_LENGTH_EUC, col="red")
+legend(20, 700, legend=c("Map Predictor (Local)", "Euclidean"), col=c("blue", "red"), lty=1:1, cex=0.8)
+```
+
+```{r trajectory length local, warning=FALSE, message=FALSE}
+library(data.table)
+library(dplyr)
+
+data <- read.csv("../predictions/test_short_previous.csv")
+
+data['TRAJ_LENGTH_EUC'] <- sqrt((data$X_START - data$X_END)^2 
+                              + (data$Y_START - data$Y_END)^2)
+
+rmpse_prediction <- sqrt(mean(((data$TRAJ_PRED - data$TRAJ_LENGTH)/data$TRAJ_LENGTH)^2))
+rmpse_euclidean  <- sqrt(mean(((data$TRAJ_LENGTH_EUC - data$TRAJ_LENGTH)/data$TRAJ_LENGTH)^2))
+
+traj_prediction_frame <- data.table(data %>% group_by(TRAJ_LENGTH) %>% 
+                                    summarise_at(vars(TRAJ_PRED), funs(median(.))))
+traj_euclidean_frame  <- data.table(data %>% group_by(TRAJ_LENGTH) %>% 
+                                    summarise_at(vars(TRAJ_LENGTH_EUC), funs(median(.))))
+
+plot(traj_prediction_frame$TRAJ_LENGTH, traj_prediction_frame$TRAJ_PRED, col="blue", 
+     xlab="Truth [m]", ylab="Prediction [m]")
+points(traj_euclidean_frame$TRAJ_LENGTH, traj_euclidean_frame$TRAJ_LENGTH_EUC, col="red")
+legend(20, 700, legend=c("Map Predictor (Local)", "Euclidean"), col=c("blue", "red"), lty=1:1, cex=0.8)
+```

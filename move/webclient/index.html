@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    
+    <title>HackZurich 2016: move!</title>
+    
+    <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" integrity="sha384-h21C2fcDk/eFsW9sC9h0dhokq5pDinLNklTKoxIZRUn3+hvmgQSffLLQ4G4l2eEr" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/move.css">
+    
+    <script src="js/fetch.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>move!</h1>
+            <p>Get up and running!</p>
+        </div>
+        <div class="alert" id="alert" role="alert">
+            <button class="close" type="button" aria-label="Close">
+                <span aria-hidden="true"> &times;</span>
+            </button>
+            <strong class="header">Alert header</strong>
+            <br/>
+            <span class="message">Alert message</span>
+        </div>
+        <div class="row">
+            <div class="col-md-6" id="createTeam">
+                <h2>Create a new team!</h2>
+                <p>&nbsp;</p>
+                <button id="createTeamButton" type="button" class="btn btn-lg btn-default" data-toggle="modal" data-target="#newTeamModal">
+                    <span>Create a new team</span>
+                </button>
+                <p>&nbsp;</p>
+            </div>
+            <div class="col-md-6" id="challenge">
+                <h2>Challenge:</h2>
+                <h3>Team <span id="betterTeamName">'Team Rocket'</span> has <span id="betterTeamSteps">'135346'</span> more steps than your team.</h3>
+                <button id="moveButton" type="button" class="btn btn-lg btn-default" style="margin:25px 0;">
+                    <span class="glyphicon glyphicon-hand-up"></span>
+                    <span>&nbsp; Beat them! Get moving!</span>
+                </button>
+                <div id="countdownClock">
+                    <div>
+                        <span class="days"></span>
+                        <div class="smalltext">Days</div>
+                    </div>
+                    <div>
+                        <span class="hours"></span>
+                        <div class="smalltext">Hours</div>
+                    </div>
+                    <div>
+                        <span class="minutes"></span>
+                        <div class="smalltext">Minutes</div>
+                    </div>
+                    <div>
+                        <span class="seconds"></span>
+                        <div class="smalltext">Seconds</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h2>My steps:</h2>
+                <table id="steps" class="table table-striped">
+                    <tr>
+                        <th>Date:</th>
+                        <th>My Steps:</th>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6" id="team" >
+                <h2 style="border-bottom: 2px solid black;">My team:</h2>
+                <span id="teamRating" class="stars pull-left">3.8618164</span>
+                <h2 id="teamName"></h2>
+                <h3 id="teamSteps"></h3>
+                <div id="teamMembers"></div>
+                <button class="btn btn-lg btn-default" data-toggle="modal" data-target="#addMemberModal" style="width: initial;margin: 5px;">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span>&nbsp; Add member</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal: Create new team  -->
+    <div class="modal fade" id="newTeamModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">
+                        Create a new team
+                    </h4>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form role="form">
+                      <div class="form-group">
+                        <label for="name">Team name</label>
+                          <input type="text" class="form-control" id="newTeamName" placeholder="Enter a team name" required="true" />
+                      </div>
+                      <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal: Add member to team -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                           <span aria-hidden="true">&times;</span>
+                           <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">
+                        Add a new member
+                    </h4>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body helvetiList">
+                    <div>
+                        <h2>Available members:</h2>
+                        <ul></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="js/countdown.js"></script>
+    <script src="js/alert.js"></script>
+    <script src="js/stars.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('span.stars').stars();
+        });
+    </script>
+    <script src="js/move.js"></script>
+</body>
+</html>

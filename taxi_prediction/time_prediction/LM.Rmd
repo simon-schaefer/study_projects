@@ -1,0 +1,104 @@
+---
+title: "ST4240 2nd order linear model"
+subtitle: A0141843J
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r libraries, message=FALSE, echo=FALSE, warning=FALSE}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
+library(dplyr)
+library(lubridate)
+library(data.table)
+```
+
+The task is to build a statistical model for predicting the price of a taxi journey based on the coordinates of the start/end of the journey, as well as the identity of the taxi driver.
+
+We first started off with reading the data into R and looking at the variables that we can utilise in the test set. 
+
+```{r import data,message=FALSE, echo=FALSE, warning=FALSE}
+train = fread("../data/train_data.csv")
+ntrain = names(train)
+
+test = fread("../predictions/test_astar.csv")
+ntest = names(test)
+```
+
+**Data exploration**
+
+We first ensure that there are no NA values in both the training and test dataset as having NA values will have an effect on our model.
+
+Next, we started off by computing straight distance in the training and test data using the x and y coordinates given. A second order straight distance was calculated and fitted into the model which improves our prediction. However, it is to note that this is a very naive method of computing distance between the pick up and drop off point. We will then move on to more sophisticated method of trajectory prediction. (include simon's traj prediction in the later part as an improvement. So this is the part that will not work well)
+
+```{r straight distance,message=FALSE, echo=FALSE, warning=FALSE}
+train <- train %>% mutate(LOG_DURATION = log(DURATION))
+train <- train %>% mutate(LOG_TRAJ_LENGTH = log(TRAJ_LENGTH))
+
+train <- train %>% mutate(STRAIGHT_DIST = sqrt( (X_END - X_START)**2 + (Y_END - Y_START)**2))
+train <- train %>% mutate(LOG_STRAIGHT_DIST = log(STRAIGHT_DIST))
+train <- train %>% mutate(LOG_STRAIGHT_DIST_2 = (log(STRAIGHT_DIST)**2))
+
+test <- test %>% mutate(STRAIGHT_DIST = sqrt( (X_END - X_START)**2 + (Y_END - Y_START)**2))
+test <- test %>% mutate(LOG_STRAIGHT_DIST = log(STRAIGHT_DIST))
+test <- test %>% mutate(LOG_STRAIGHT_DIST_2 = (log(STRAIGHT_DIST)**2))
+```
+
+**Day**
+
+We created a new variable, Day as we found that taxis are going faster during the weekends. Hence, knowing the day of the trip will help in predicting the duration.
+
+```{r speed days}
+speed = rep(0,7)
+for(i in 1:7){
+  mean_speed <- train %>% 
+    filter( wday(TIMESTAMP) == i) %>% 
+    mutate(VELOCITY = TRAJ_LENGTH / DURATION) %>% 
+    summarise( mean(VELOCITY))
+  speed[i] = unlist(mean_speed)
+}
+plot(speed, type="b", lwd = 3, main = "Speed per day",
+     xlab = "Day")
+```
+
+```{r day of week}
+train <- train %>% mutate(DAY = as.factor(wday(TIMESTAMP)))
+test <- test %>% mutate(DAY = as.factor(wday(TIMESTAMP)))
+```
+
+```{r hour}
+train <- train %>% mutate(HOUR = as.factor(hour(TIMESTAMP)))
+test <- test %>% mutate(HOUR = as.factor(hour(TIMESTAMP)))
+```
+
+Note that the numbers 1 to 7 does not carry any value. It merely represents the day of the week. Hence, we will be transforming them into categorical variables using as.factor()
+
+Lets also look at the speed of the taxi during different time during weekdays
+```{r speed time}
+speed = rep(0,24)
+for(i in 1:24){
+  mean_speed_time <- train %>% 
+    filter( HOUR == i) %>% 
+    mutate(VELOCITY = TRAJ_LENGTH / DURATION) %>% 
+    summarise( mean(VELOCITY))
+  speed[i] = unlist(mean_speed_time)
+}
+plot(speed, type="b", lwd = 3, main = "Speed",
+     xlab = "Day")
+```
+5am onwards, speed starts to decrease, slowest at 5pm.
+
+```{r lm}
+lm_log_duration = lm(LOG_DURATION ~ LOG_STRAIGHT_DIST + LOG_STRAIGHT_DIST_2 + DAY + HOUR  , data=train)
+lm_prediction_duration_test <- exp(predict(lm_log_duration, test))
+lm_prediction_traj_test = test$TRAJ_OPTIMAL #simon's traj prediction
+```
+
+
+```{r}
+options(scipen=999)
+submission = data.frame(ID = test$ID,PRICE = lm_prediction_duration_test + lm_prediction_traj_test)
+write.csv(x=submission, "../predictions/submission.csv", row.names = FALSE)
+```
+

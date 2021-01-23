@@ -1,0 +1,61 @@
+---
+title: "Map_Prediction_Graphs"
+output: pdf
+---
+
+```{r load data, warning=FALSE, message=FALSE}
+library(data.table)
+library(dplyr)
+
+data <- read.csv("../data/train_data.csv")
+head(data)
+```
+
+```{r timestamp}
+data <- data %>% mutate(DAY = as.factor(wday(TIMESTAMP)))
+data <- data %>% mutate(HOUR = as.factor(hour(TIMESTAMP)))
+```
+
+```{r accucary, warning=FALSE, message=FALSE}
+rmpse <- function(truth, prediction) 
+{
+   rmpse_eval <- mean(((truth - prediction)/truth)^2)
+   return(sqrt(rmpse_eval))
+}
+```
+
+```{r linear regression, warning=FALSE, message=FALSE}
+model.lm <- lm(TRAJ_LENGTH ~ X_START + Y_START + X_END + Y_END + HOUR, data=data)
+pred.lm  <- predict(model.lm, data)
+rmpse(data$TRAJ_LENGTH, pred.lm)
+```
+
+```{r neural net, warning=FALSE, message=FALSE}
+library(nnet)
+
+model.net  <- nnet(TRAJ_LENGTH ~ X_START + Y_START + X_END + Y_END + HOUR, size=6, data=data, 
+                   linout=TRUE, trace=FALSE) 
+pred.net  <- predict(model.net, data)
+rmpse(data$TRAJ_LENGTH, pred.net)
+```
+
+```{r linear regression, warning=FALSE, message=FALSE}
+library(e1071)
+
+short_data <- data[1:200000,]
+
+model.svm <- svm(TRAJ_LENGTH ~ X_START + Y_START + X_END + Y_END + HOUR, data=short_data)
+pred.svm  <- predict(model.svm, short_data)
+rmpse(data$TRAJ_LENGTH, pred.svm)
+```
+
+```{r forest, warning=FALSE, message=FALSE}
+library(randomForest)
+
+short_data <- data[1:10000,]
+
+model.forest <- randomForest(TRAJ_LENGTH ~ X_START + Y_START + X_END + Y_END + HOUR, data=short_data)
+pred.forest  <- predict(model.forest, short_data)
+rmpse(short_data$TRAJ_LENGTH, pred.forest)
+```
+

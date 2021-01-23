@@ -1,0 +1,42 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% (Infinite Horizon) LQR controller
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% INPUT:
+%   T: Measured system temperatures, dimension (3,1)
+% OUTPUT:
+%   p: Cooling power, dimension (2,1)
+function p = controller_lqr(T)
+% controller variables
+persistent param;
+% initialize controller, if not done already
+if isempty(param)
+    param = init();
+    cost(param, T - param.T_sp);
+end
+% normalize input. 
+x = T - param.T_sp;
+% compute control action
+u = -1*param.F_inf*x;
+% denormalize input. 
+p = u + param.p_sp;
+end
+
+function param = init()
+param = compute_controller_base_parameters;
+A = param.A; 
+B = param.B; 
+R = param.R; 
+Q = param.Q; 
+[param.F_inf,param.P_inf,~] = dlqr(A,B,Q,R);
+% dare function
+end
+
+function J_inf = cost(param, x)
+J_inf = x.'*param.P_inf*x; 
+
+disp('The infinite horizon cost under the LQR control can be obtained')
+disp('by finding the infinite horizon terminal weight P_inf, such that')
+disp('J_LQR^inf(x(0)) = x(0)^T P_inf x(0). P_inf can be calculated by')
+disp(['solving the Algebraic Riccatti equation. J_inf = ', num2str(J_inf)])
+
+end

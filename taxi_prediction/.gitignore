@@ -1,0 +1,7 @@
+data/
+predictions/
+imgs/bad/
+map_prediction/cmake-build-release
+map_prediction/.ipynb_checkpoints
+map_prediction/.idea
+*.Rhistory
