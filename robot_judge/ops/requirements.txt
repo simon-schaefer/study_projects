@@ -1,0 +1,9 @@
+joblib
+numpy
+pandas
+nltk
+matplotlib
+seaborn
+tqdm
+pytest
+plotly
